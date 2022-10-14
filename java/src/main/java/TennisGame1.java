@@ -1,10 +1,19 @@
 
 public class TennisGame1 implements TennisGame {
 
-    private int m_score1 = 0;
-    private int m_score2 = 0;
-    private String player1Name;
-    private String player2Name;
+    private static final String LOVE = "Love";
+    private static final String FIFTEEN = "Fifteen";
+    private static final String THIRTY = "Thirty";
+    private static final String FORTY = "Forty";
+    private static final String ALL = "All";
+    private static final String SCORE_DELIMITER = "-";
+    private static final String DEUCE = "Deuce";
+    private static final String ADVANTAGE = "Advantage ";
+    private static final String WIN_FOR = "Win for ";
+    private int player1Score = 0;
+    private int player2Score = 0;
+    private final String player1Name;
+    private final String player2Name;
 
     public TennisGame1(String player1Name, String player2Name) {
         this.player1Name = player1Name;
@@ -13,67 +22,55 @@ public class TennisGame1 implements TennisGame {
 
     public void wonPoint(String playerName) {
         if (playerName.equals(player1Name))
-            m_score1++;
+            player1Score++;
         else
-            m_score2++;
+            player2Score++;
     }
 
     public String getScore() {
-        String score = "";
-        if (m_score1 == m_score2) {
+        if (player1Score == player2Score) {
             return manageScoreWhenEquality();
-        } else if (m_score1 >= 4 || m_score2 >= 4) {
-            int minusResult = m_score1 - m_score2;
-            if (minusResult == 1) score = "Advantage player1";
-            else if (minusResult == -1) score = "Advantage player2";
-            else if (minusResult >= 2) score = "Win for player1";
-            else score = "Win for player2";
-        } else {
-            score += translateIntScoreToStringScore(m_score1);
-            score += "-";
-            score += translateIntScoreToStringScore(m_score2);
         }
+        if (player1Score >= 4 || player2Score >= 4) {
+            return manageScoreWhenAdvantageOrWin();
+        }
+
+        return manageSimpleScore();
+    }
+
+    private String manageSimpleScore() {
+        String score = translateIntScoreToStringScore(player1Score);
+        score += SCORE_DELIMITER;
+        score += translateIntScoreToStringScore(player2Score);
         return score;
     }
 
-    private String translateIntScoreToStringScore(int tempScore) {
-        String score = "";
-        switch (tempScore) {
-            case 0:
-                score = "Love";
-                break;
-            case 1:
-                score = "Fifteen";
-                break;
-            case 2:
-                score = "Thirty";
-                break;
-            case 3:
-                score = "Forty";
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + tempScore);
-        }
-        return score;
+    private String manageScoreWhenAdvantageOrWin() {
+        int player1AdvantageValue = player1Score - player2Score;
+
+        if (player1AdvantageValue == 1) return ADVANTAGE + player1Name;
+        if (player1AdvantageValue == -1) return ADVANTAGE + player2Name;
+        if (player1AdvantageValue >= 2) return WIN_FOR + player1Name;
+
+        return WIN_FOR + player2Name;
+    }
+
+    private String translateIntScoreToStringScore(int score) {
+        return switch (score) {
+            case 0 -> LOVE;
+            case 1 -> FIFTEEN;
+            case 2 -> THIRTY;
+            case 3 -> FORTY;
+            default -> throw new IllegalStateException("Unexpected value: " + score);
+        };
     }
 
     private String manageScoreWhenEquality() {
-        String score;
-        switch (m_score1) {
-            case 0:
-                score = "Love-All";
-                break;
-            case 1:
-                score = "Fifteen-All";
-                break;
-            case 2:
-                score = "Thirty-All";
-                break;
-            default:
-                score = "Deuce";
-                break;
-
-        }
-        return score;
+        return switch (player1Score) {
+            case 0 -> LOVE + SCORE_DELIMITER + ALL;
+            case 1 -> FIFTEEN + SCORE_DELIMITER + ALL;
+            case 2 -> THIRTY + SCORE_DELIMITER + ALL;
+            default -> DEUCE;
+        };
     }
 }
