@@ -44,10 +44,11 @@ public class TennisGame2 implements TennisGame {
             score = ADVANTAGE + player2Name;
         }
 
-        if (player1Point >= 4 && player2Point >= 0 && (player1Point - player2Point) >= 2) {
+        int player1AdvantageValue = player1Point - player2Point;
+        if (player1Point >= 4 && player2Point >= 0 && player1AdvantageValue >= 2) {
             score = WIN_FOR + player1Name;
         }
-        if (player2Point >= 4 && player1Point >= 0 && (player2Point - player1Point) >= 2) {
+        if (player2Point >= 4 && player1Point >= 0 && player1AdvantageValue <= -2) {
             score = WIN_FOR + player2Name;
         }
         return score;
