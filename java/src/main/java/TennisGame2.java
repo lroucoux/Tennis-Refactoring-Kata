@@ -23,57 +23,19 @@ public class TennisGame2 implements TennisGame {
     }
 
     public String getScore() {
-        String score = "";
         if (isEquality()) {
-            return getScoreIfEquality(score);
+            return getScoreIfEquality();
         }
 
-        if (player1Point > 0 && player2Point == 0) {
-            if (player1Point == 1)
-                player1Score = FIFTEEN;
-            if (player1Point == 2)
-                player1Score = THIRTY;
-            if (player1Point == 3)
-                player1Score = FORTY;
-
-            player2Score = LOVE;
-            score = player1Score + SCORE_DELIMITER + player2Score;
-        }
-        if (player2Point > 0 && player1Point == 0) {
-            if (player2Point == 1)
-                player2Score = FIFTEEN;
-            if (player2Point == 2)
-                player2Score = THIRTY;
-            if (player2Point == 3)
-                player2Score = FORTY;
-
-            player1Score = LOVE;
-            score = player1Score + SCORE_DELIMITER + player2Score;
+        if (player1Point < 4 && player2Point < 4) {
+            return getScoreWhenSimpleScore();
         }
 
-        if (player1Point > player2Point && player1Point < 4) {
-            if (player1Point == 2)
-                player1Score = THIRTY;
-            if (player1Point == 3)
-                player1Score = FORTY;
-            if (player2Point == 1)
-                player2Score = FIFTEEN;
-            if (player2Point == 2)
-                player2Score = THIRTY;
-            score = player1Score + SCORE_DELIMITER + player2Score;
-        }
-        if (player2Point > player1Point && player2Point < 4) {
-            if (player2Point == 2)
-                player2Score = THIRTY;
-            if (player2Point == 3)
-                player2Score = FORTY;
-            if (player1Point == 1)
-                player1Score = FIFTEEN;
-            if (player1Point == 2)
-                player1Score = THIRTY;
-            score = player1Score + SCORE_DELIMITER + player2Score;
-        }
+        return getScoreWHenAdvantageOrVictory();
+    }
 
+    private String getScoreWHenAdvantageOrVictory() {
+        String score = "";
         if (player1Point > player2Point && player2Point >= 3) {
             score = ADVANTAGE + player1Name;
         }
@@ -91,7 +53,26 @@ public class TennisGame2 implements TennisGame {
         return score;
     }
 
-    private String getScoreIfEquality(String score) {
+    private String getScoreWhenSimpleScore() {
+        player1Score = translatePointToScore(player1Point);
+        player2Score = translatePointToScore(player2Point);
+
+        return player1Score + SCORE_DELIMITER + player2Score;
+    }
+
+    private String translatePointToScore(int playerPoint) {
+        return switch (playerPoint) {
+            case 0 -> LOVE;
+            case 1 -> FIFTEEN;
+            case 2 -> THIRTY;
+            case 3 -> FORTY;
+            default -> throw new IllegalStateException("Unexpected value: " + playerPoint);
+        };
+    }
+
+    private String getScoreIfEquality() {
+        String score = "";
+
         if (player1Point == 0)
             score = LOVE;
         if (player1Point == 1)
