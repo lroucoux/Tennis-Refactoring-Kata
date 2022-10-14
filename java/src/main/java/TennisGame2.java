@@ -1,13 +1,22 @@
 
 public class TennisGame2 implements TennisGame
 {
-    public int P1point = 0;
-    public int P2point = 0;
-    
-    public String P1res = "";
-    public String P2res = "";
-    private String player1Name;
-    private String player2Name;
+    private static final String LOVE = "Love";
+    private static final String FIFTEEN = "Fifteen";
+    private static final String THIRTY = "Thirty";
+    private static final String ALL = "All";
+    private static final String SCORE_DELIMITER = "-";
+    private static final String DEUCE = "Deuce";
+    private static final String FORTY = "Forty";
+    private static final String ADVANTAGE = "Advantage ";
+    private static final String WIN_FOR = "Win for ";
+    private int player1Point = 0;
+    private int player2Point = 0;
+
+    private String player1Score = "";
+    private String player2Score = "";
+    private final String player1Name;
+    private final String player2Name;
 
     public TennisGame2(String player1Name, String player2Name) {
         this.player1Name = player1Name;
@@ -16,120 +25,94 @@ public class TennisGame2 implements TennisGame
 
     public String getScore(){
         String score = "";
-        if (P1point == P2point && P1point < 4)
+        if (player1Point == player2Point && player1Point < 4)
         {
-            if (P1point==0)
-                score = "Love";
-            if (P1point==1)
-                score = "Fifteen";
-            if (P1point==2)
-                score = "Thirty";
-            score += "-All";
+            if (player1Point ==0)
+                score = LOVE;
+            if (player1Point ==1)
+                score = FIFTEEN;
+            if (player1Point ==2)
+                score = THIRTY;
+            score += SCORE_DELIMITER + ALL;
         }
-        if (P1point==P2point && P1point>=3)
-            score = "Deuce";
+        if (player1Point == player2Point && player1Point >=3)
+            score = DEUCE;
         
-        if (P1point > 0 && P2point==0)
+        if (player1Point > 0 && player2Point ==0)
         {
-            if (P1point==1)
-                P1res = "Fifteen";
-            if (P1point==2)
-                P1res = "Thirty";
-            if (P1point==3)
-                P1res = "Forty";
+            if (player1Point ==1)
+                player1Score = FIFTEEN;
+            if (player1Point ==2)
+                player1Score = THIRTY;
+            if (player1Point ==3)
+                player1Score = FORTY;
             
-            P2res = "Love";
-            score = P1res + "-" + P2res;
+            player2Score = LOVE;
+            score = player1Score + SCORE_DELIMITER + player2Score;
         }
-        if (P2point > 0 && P1point==0)
+        if (player2Point > 0 && player1Point ==0)
         {
-            if (P2point==1)
-                P2res = "Fifteen";
-            if (P2point==2)
-                P2res = "Thirty";
-            if (P2point==3)
-                P2res = "Forty";
+            if (player2Point ==1)
+                player2Score = FIFTEEN;
+            if (player2Point ==2)
+                player2Score = THIRTY;
+            if (player2Point ==3)
+                player2Score = FORTY;
             
-            P1res = "Love";
-            score = P1res + "-" + P2res;
+            player1Score = LOVE;
+            score = player1Score + SCORE_DELIMITER + player2Score;
         }
         
-        if (P1point>P2point && P1point < 4)
+        if (player1Point > player2Point && player1Point < 4)
         {
-            if (P1point==2)
-                P1res="Thirty";
-            if (P1point==3)
-                P1res="Forty";
-            if (P2point==1)
-                P2res="Fifteen";
-            if (P2point==2)
-                P2res="Thirty";
-            score = P1res + "-" + P2res;
+            if (player1Point ==2)
+                player1Score = THIRTY;
+            if (player1Point ==3)
+                player1Score = FORTY;
+            if (player2Point ==1)
+                player2Score = FIFTEEN;
+            if (player2Point ==2)
+                player2Score = THIRTY;
+            score = player1Score + SCORE_DELIMITER + player2Score;
         }
-        if (P2point>P1point && P2point < 4)
+        if (player2Point > player1Point && player2Point < 4)
         {
-            if (P2point==2)
-                P2res="Thirty";
-            if (P2point==3)
-                P2res="Forty";
-            if (P1point==1)
-                P1res="Fifteen";
-            if (P1point==2)
-                P1res="Thirty";
-            score = P1res + "-" + P2res;
-        }
-        
-        if (P1point > P2point && P2point >= 3)
-        {
-            score = "Advantage player1";
+            if (player2Point ==2)
+                player2Score = THIRTY;
+            if (player2Point ==3)
+                player2Score = FORTY;
+            if (player1Point ==1)
+                player1Score = FIFTEEN;
+            if (player1Point ==2)
+                player1Score = THIRTY;
+            score = player1Score + SCORE_DELIMITER + player2Score;
         }
         
-        if (P2point > P1point && P1point >= 3)
+        if (player1Point > player2Point && player2Point >= 3)
         {
-            score = "Advantage player2";
+            score = ADVANTAGE + player1Name;
         }
         
-        if (P1point>=4 && P2point>=0 && (P1point-P2point)>=2)
+        if (player2Point > player1Point && player1Point >= 3)
         {
-            score = "Win for player1";
+            score = ADVANTAGE + player2Name;
         }
-        if (P2point>=4 && P1point>=0 && (P2point-P1point)>=2)
+        
+        if (player1Point >=4 && player2Point >=0 && (player1Point - player2Point)>=2)
         {
-            score = "Win for player2";
+            score = WIN_FOR + player1Name;
+        }
+        if (player2Point >=4 && player1Point >=0 && (player2Point - player1Point)>=2)
+        {
+            score = WIN_FOR + player2Name;
         }
         return score;
     }
-    
-    public void SetP1Score(int number){
-        
-        for (int i = 0; i < number; i++)
-        {
-            P1Score();
-        }
-            
-    }
-    
-    public void SetP2Score(int number){
-        
-        for (int i = 0; i < number; i++)
-        {
-            P2Score();
-        }
-            
-    }
-    
-    public void P1Score(){
-        P1point++;
-    }
-    
-    public void P2Score(){
-        P2point++;
-    }
 
     public void wonPoint(String player) {
-        if (player == "player1")
-            P1Score();
+        if (player1Name.equals(player))
+            player1Point++;
         else
-            P2Score();
+            player2Point++;
     }
 }
