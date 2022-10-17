@@ -12,8 +12,6 @@ public class TennisGame2 implements TennisGame {
     private int player1Point = 0;
     private int player2Point = 0;
 
-    private String player1Score = "";
-    private String player2Score = "";
     private final String player1Name;
     private final String player2Name;
 
@@ -24,39 +22,56 @@ public class TennisGame2 implements TennisGame {
 
     public String getScore() {
         if (isEquality()) {
-            return getScoreIfEquality();
+            return getScoreWhenEquality();
         }
 
-        if (player1Point < 4 && player2Point < 4) {
+        if (isSimpleScore()) {
             return getScoreWhenSimpleScore();
         }
 
         return getScoreWHenAdvantageOrVictory();
     }
 
-    private String getScoreWHenAdvantageOrVictory() {
-        String score = "";
-        if (player1Point > player2Point && player2Point >= 3) {
-            score = ADVANTAGE + player1Name;
-        }
+    private boolean isSimpleScore() {
+        return player1Point < 4 && player2Point < 4;
+    }
 
-        if (player2Point > player1Point && player1Point >= 3) {
-            score = ADVANTAGE + player2Name;
-        }
+    private String getScoreWHenAdvantageOrVictory() {
 
         int player1AdvantageValue = player1Point - player2Point;
-        if (player1Point >= 4 && player2Point >= 0 && player1AdvantageValue >= 2) {
-            score = WIN_FOR + player1Name;
+        boolean isPlayer1Win = player1Point >= 4 && player2Point >= 0 && player1AdvantageValue >= 2;
+        boolean isPlayer2Win = player2Point >= 4 && player1Point >= 0 && player1AdvantageValue <= -2;
+        boolean isAnyPlayerWin = isPlayer1Win || isPlayer2Win;
+
+        if (isAnyPlayerWin) {
+            return WIN_FOR + playerWin(isPlayer1Win);
         }
-        if (player2Point >= 4 && player1Point >= 0 && player1AdvantageValue <= -2) {
-            score = WIN_FOR + player2Name;
+
+        boolean hasPlayer1Advantage = player1Point > player2Point && player2Point >= 3;
+
+        return ADVANTAGE + playerWithAdvantage(hasPlayer1Advantage);
+    }
+
+    private String playerWin(boolean isPlayer1Win) {
+        return playerWithAdvantageOrWin(isPlayer1Win);
+    }
+
+    private String playerWithAdvantage(boolean hasPlayer1Advantage) {
+        return playerWithAdvantageOrWin(hasPlayer1Advantage);
+    }
+
+
+    private String playerWithAdvantageOrWin(boolean isPlayer1WithAdvantageOrWin) {
+        if (isPlayer1WithAdvantageOrWin) {
+            return player1Name;
         }
-        return score;
+
+        return player2Name;
     }
 
     private String getScoreWhenSimpleScore() {
-        player1Score = translatePointToScore(player1Point);
-        player2Score = translatePointToScore(player2Point);
+        String player1Score = translatePointToScore(player1Point);
+        String player2Score = translatePointToScore(player2Point);
 
         return player1Score + SCORE_DELIMITER + player2Score;
     }
@@ -71,20 +86,11 @@ public class TennisGame2 implements TennisGame {
         };
     }
 
-    private String getScoreIfEquality() {
-        String score = "";
-
-        if (player1Point == 0)
-            score = LOVE;
-        if (player1Point == 1)
-            score = FIFTEEN;
-        if (player1Point == 2)
-            score = THIRTY;
-        score += SCORE_DELIMITER + ALL;
+    private String getScoreWhenEquality() {
         if (player1Point >= 3)
-            score = DEUCE;
+            return DEUCE;
 
-        return score;
+        return translatePointToScore(player1Point) + SCORE_DELIMITER + ALL;
     }
 
     private boolean isEquality() {
