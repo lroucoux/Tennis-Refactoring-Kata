@@ -1,8 +1,19 @@
 
 public class TennisGame1 implements TennisGame {
-    
-    private int m_score1 = 0;
-    private int m_score2 = 0;
+
+    private static final String LOVE = "Love";
+    private static final String FIFTEEN = "Fifteen";
+    private static final String THIRTY = "Thirty";
+    private static final String DEUCE = "Deuce";
+    private static final String FORTY = "Forty";
+    private static final String ALL = "All";
+    private static final String ADVANTAGE = "Advantage ";
+    private static final String WIN_FOR = "Win for ";
+    private static final String SCORE_SEPARATOR = "-";
+
+    private int player1Score = 0;
+    private int player2Score = 0;
+
     private String player1Name;
     private String player2Name;
 
@@ -12,65 +23,63 @@ public class TennisGame1 implements TennisGame {
     }
 
     public void wonPoint(String playerName) {
-        if (playerName == "player1")
-            m_score1 += 1;
+        if (player1Name.equals(playerName))
+            player1Score += 1;
         else
-            m_score2 += 1;
+            player2Score += 1;
     }
 
     public String getScore() {
-        String score = "";
-        int tempScore=0;
-        if (m_score1==m_score2)
-        {
-            switch (m_score1)
-            {
-                case 0:
-                        score = "Love-All";
-                    break;
-                case 1:
-                        score = "Fifteen-All";
-                    break;
-                case 2:
-                        score = "Thirty-All";
-                    break;
-                default:
-                        score = "Deuce";
-                    break;
-                
-            }
+        if (player1Score == player2Score) {
+            return getScoreWhenEquality();
+        } else if (player1Score >= 4 || player2Score >= 4) {
+            return getScoreWhenAdvantageOrWin();
+        } else {
+            return getScoreNominal();
         }
-        else if (m_score1>=4 || m_score2>=4)
-        {
-            int minusResult = m_score1-m_score2;
-            if (minusResult==1) score ="Advantage player1";
-            else if (minusResult ==-1) score ="Advantage player2";
-            else if (minusResult>=2) score = "Win for player1";
-            else score ="Win for player2";
+    }
+
+    private String getScoreNominal() {
+        return translateScore(player1Score) + SCORE_SEPARATOR + translateScore(player2Score);
+    }
+
+    private String getScoreWhenAdvantageOrWin() {
+        int minusResult = compareScore();
+        if (minusResult == 1) {
+            return ADVANTAGE + player1Name;
+        } else if (minusResult == -1) {
+            return ADVANTAGE + player2Name;
+        } else if (minusResult >= 2) {
+            return WIN_FOR + player1Name;
+        } else {
+            return WIN_FOR + player2Name;
         }
-        else
-        {
-            for (int i=1; i<3; i++)
-            {
-                if (i==1) tempScore = m_score1;
-                else { score+="-"; tempScore = m_score2;}
-                switch(tempScore)
-                {
-                    case 0:
-                        score+="Love";
-                        break;
-                    case 1:
-                        score+="Fifteen";
-                        break;
-                    case 2:
-                        score+="Thirty";
-                        break;
-                    case 3:
-                        score+="Forty";
-                        break;
-                }
-            }
+    }
+
+    private int compareScore() {
+        return player1Score - player2Score;
+    }
+
+    private String getScoreWhenEquality() {
+        if(player1Score < 3) {
+            return translateScore(player1Score) + SCORE_SEPARATOR + ALL;
+        } else {
+            return DEUCE;
         }
-        return score;
+    }
+
+    private String translateScore(Integer score){
+        switch (score) {
+            case 0:
+                return LOVE;
+            case 1:
+                return FIFTEEN;
+            case 2:
+                return THIRTY;
+            case 3:
+                return FORTY;
+            default:
+                throw new IllegalArgumentException("Score interdit");
+        }
     }
 }
