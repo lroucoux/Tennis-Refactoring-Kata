@@ -11,8 +11,8 @@ public class TennisGame1 implements TennisGame {
     private static final String WIN_FOR = "Win for ";
     private static final String SCORE_SEPARATOR = "-";
 
-    private int player1Score = 0;
-    private int player2Score = 0;
+    private Score player1Score = new Score();
+    private Score player2Score = new Score();
 
     private String player1Name;
     private String player2Name;
@@ -24,62 +24,93 @@ public class TennisGame1 implements TennisGame {
 
     public void wonPoint(String playerName) {
         if (player1Name.equals(playerName))
-            player1Score += 1;
+            player1Score.addPoint();
         else
-            player2Score += 1;
-    }
-
-    public String getScore() {
-        if (player1Score == player2Score) {
-            return getScoreWhenEquality();
-        } else if (player1Score >= 4 || player2Score >= 4) {
-            return getScoreWhenAdvantageOrWin();
-        } else {
-            return getScoreNominal();
-        }
+            player2Score.addPoint();
     }
 
     private String getScoreNominal() {
-        return translateScore(player1Score) + SCORE_SEPARATOR + translateScore(player2Score);
+        return player1Score.translate() + SCORE_SEPARATOR + player2Score.translate();
+    }
+
+    public String getScore() {
+        if (isEquality()) {
+            return getScoreWhenEquality();
+        }
+        if (isAdvantageOrWin()) {
+            return getScoreWhenAdvantageOrWin();
+        }
+        return getScoreNominal();
+    }
+
+    private boolean isAdvantageOrWin() {
+        return player1Score.get() >= 4 || player2Score.get() >= 4;
+    }
+
+    private boolean isEquality() {
+        return player1Score.compare(player2Score) == 0;
     }
 
     private String getScoreWhenAdvantageOrWin() {
-        int minusResult = compareScore();
-        if (minusResult == 1) {
-            return ADVANTAGE + player1Name;
-        } else if (minusResult == -1) {
-            return ADVANTAGE + player2Name;
-        } else if (minusResult >= 2) {
-            return WIN_FOR + player1Name;
+
+        int scoreDifference = getDifferenceScore();
+        if (scoreDifference > 0) {
+            return advantageOrWinForPlayer(player1Name, scoreDifference);
+        }
+        return advantageOrWinForPlayer(player2Name, scoreDifference);
+    }
+
+    private String advantageOrWinForPlayer(String playerName, Integer advantage) {
+        if (Math.abs(advantage) == 1) {
+            return ADVANTAGE + playerName;
         } else {
-            return WIN_FOR + player2Name;
+            return WIN_FOR + playerName;
         }
     }
 
-    private int compareScore() {
-        return player1Score - player2Score;
+    private int getDifferenceScore() {
+        return player1Score.get() - player2Score.get();
     }
 
     private String getScoreWhenEquality() {
-        if(player1Score < 3) {
-            return translateScore(player1Score) + SCORE_SEPARATOR + ALL;
+        if (player1Score.get() < 3) {
+            return player1Score.translate() + SCORE_SEPARATOR + ALL;
         } else {
             return DEUCE;
         }
     }
 
-    private String translateScore(Integer score){
-        switch (score) {
-            case 0:
-                return LOVE;
-            case 1:
-                return FIFTEEN;
-            case 2:
-                return THIRTY;
-            case 3:
-                return FORTY;
-            default:
-                throw new IllegalArgumentException("Score interdit");
+
+    private class Score {
+
+        private Integer current = 0;
+
+        public void addPoint() {
+            this.current++;
         }
+
+        public Integer compare(Score score) {
+            return this.current.compareTo(score.get());
+        }
+
+        public Integer get() {
+            return current;
+        }
+
+        public String translate() {
+            switch (current) {
+                case 0:
+                    return LOVE;
+                case 1:
+                    return FIFTEEN;
+                case 2:
+                    return THIRTY;
+                case 3:
+                    return FORTY;
+                default:
+                    throw new IllegalArgumentException("Score interdit");
+            }
+        }
+
     }
 }
